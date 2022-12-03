@@ -41,5 +41,6 @@ esp_err_t lcd_set_cursor(uint8_t x, uint8_t y);
 esp_err_t lcd_init(uint8_t flags);
 esp_err_t lcd_print(const char *str);
 esp_err_t lcd_clear();
+esp_err_t lcd_set_flags(uint8_t flags);
 
 #endif

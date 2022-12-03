@@ -6,6 +6,7 @@
 #include "util.h"
 
 static const char *TAG = "lcd";
+static volatile uint8_t _backlight = 0;
 
 static esp_err_t i2c_master_init() {
     int i2c_master_port = 0;
@@ -43,9 +44,9 @@ static esp_err_t lcd_pulse_enable(uint8_t byte) {
 }
 
 static esp_err_t lcd_expander_write_4bit(uint8_t nibble) {
-    EXPECT_WRITE(nibble | LCD_BACKLIGHT)
+    EXPECT_WRITE(nibble | _backlight)
     
-    return lcd_pulse_enable(nibble | LCD_BACKLIGHT);
+    return lcd_pulse_enable(nibble | _backlight);
 }
 
 static esp_err_t lcd_send(uint8_t byte, uint8_t mode) {
@@ -67,7 +68,7 @@ esp_err_t lcd_init(uint8_t flags) {
     delayMs(10);
 
     ESP_LOGI(TAG, "Resetting expander and turning on backlight");
-    EXPECT_WRITE(LCD_BACKLIGHT)
+    EXPECT_WRITE(_backlight)
     delayMs(10);
 
     ESP_LOGI(TAG, "Setting 4 bit mode");
@@ -88,11 +89,11 @@ esp_err_t lcd_init(uint8_t flags) {
 
     ESP_LOGI(TAG, "Clearing the display");
     EXPECT_SEND(LCD_CLEAR_DISPLAY, 0)
-    delayMs(10);
+    delayMs(2);
 
     ESP_LOGI(TAG, "Resetting the cursor");
     EXPECT_SEND(LCD_RETURN_HOME, 0)
-    delayMs(10);
+    delayMs(2);
 
     return ESP_OK;
 }
@@ -107,7 +108,24 @@ esp_err_t lcd_print(const char *str) {
 
 esp_err_t lcd_clear() {
     EXPECT_SEND(LCD_CLEAR_DISPLAY, 0)
-    delayMs(10);
+    delayMs(2);
 
     return ESP_OK;
+}
+
+esp_err_t lcd_set_flags(uint8_t flags) {
+    _backlight = (flags & 0x01) ? LCD_BACKLIGHT : 0;
+    EXPECT_SEND(0, 0);
+
+    uint8_t lcd_flags = LCD_DISPLAY_ON;
+
+    if (flags & 0x02) {
+        lcd_flags |= LCD_CURSOR_ON;
+    }
+
+    if (flags & 0x04) {
+        lcd_flags |= LCD_BLINK_ON;
+    }
+
+    return lcd_send(LCD_DISPLAY_CONTROL | lcd_flags, 0);
 }

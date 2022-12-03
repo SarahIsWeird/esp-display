@@ -70,14 +70,19 @@ comm_err_t handle_init() {
 }
 
 comm_err_t handle_flags() {
-    await_char();
+    int flags = await_char();
+    
+    comm_err_t error = lcd_set_flags(flags) == ESP_OK ? ERR_NONE : ERR_INTERNAL;
 
-    comm_log("Display flags aren't implemented yet.");
-    return ERR_NONE;
+    comm_log(error == ERR_NONE ? "Set the display flags." : "Failed to set the display flags.");
+    return error;
 }
 
 comm_err_t handle_clear() {
-    return lcd_clear();
+    comm_err_t error = lcd_clear() == ESP_OK ? ERR_NONE : ERR_INTERNAL;
+
+    comm_log(error == ERR_NONE ? "Cleared the display." : "Failed to clear the display.");
+    return error;
 }
 
 comm_err_t handle_set_cursor() {
