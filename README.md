@@ -24,12 +24,12 @@ The baud rate is 115,200. The first byte determines the command. If the command 
 #### Example
 
 ```
-00           // initialize display
-01 03        // turn on backlight and cursor
-02           // clear the display
-03 00 00     // set the cursor to row 0 col 0
-04 03 68 69 69  // print "hii"
-03 00 01     // set the cursor to row 1 col 0
+00                // initialize display
+01 03             // turn on backlight and cursor
+02                // clear the display
+03 00 00          // set the cursor to row 0 col 0
+04 03 68 69 69    // print "hii"
+03 00 01          // set the cursor to row 1 col 0
 04 04 68 72 75 3f // print "hru?"
 ```
 
