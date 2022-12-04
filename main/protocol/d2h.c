@@ -17,5 +17,5 @@ void comm_err(comm_err_t error_code) {
 }
 
 void comm_log(const char *str) {
-    printf("%u %hu %s\n", D2H_LOG, (unsigned short) strlen(str), str);
+    printf("%c%c%s", D2H_LOG, (uint8_t) strlen(str), str);
 }
